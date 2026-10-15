@@ -7,16 +7,11 @@
   <title>NW QR Studio — Northwest Bible Baptist Church</title>
   <meta name="description" content="Generate beautifully customisable QR codes. Colors, gradients, shapes, logos. No limits, no signup, no tracking." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff6ec7'/%3E%3Cstop offset='.5' stop-color='%23a78bfa'/%3E%3Cstop offset='1' stop-color='%2360a5fa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath fill='white' d='M14 14h12v12H14zm4 4v4h4v-4zm20-4h12v12H38zm4 4v4h4v-4zm-28 20h12v12H14zm4 4v4h4v-4zm20-4h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4zm8 0h4v4h-4z'/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js" defer></script>
-  <script type="module">
-    import QRCode from "https://cdn.jsdelivr.net/npm/qrcode@1.5.4/+esm";
-    window.QRCode = QRCode;
-    window.dispatchEvent(new Event("qrcode-loaded"));
-  </script>
-  <script src="app.js?v=7" defer></script>
+  <script src="app.js?v=8" defer></script>
 </head>
-<body data-engine-mode="styled">
+<body>
   <div class="bg-mesh" aria-hidden="true"></div>
   <div class="bg-grain" aria-hidden="true"></div>
 
@@ -47,14 +42,25 @@
         <input id="url" type="text" value="https://nwbbc.com" autocomplete="off" spellcheck="false" />
       </div>
 
-      <div class="segmented" role="tablist" aria-label="Rendering engine">
-        <button type="button" role="tab" aria-selected="true" data-engine="styled">Styled</button>
-        <button type="button" role="tab" aria-selected="false" data-engine="simple">Simple</button>
-      </div>
-      <p class="hint-line subtle">
-        <span data-engine-only="styled">Full styling — gradients, shapes, logos. Powered by <code>qr-code-styling</code>.</span>
-        <span data-engine-only="simple">Lean &amp; fast — colors only. Powered by <code>qrcode</code>.</span>
-      </p>
+      <div id="mobile-preview-slot" class="mobile-preview-slot"></div>
+
+      <fieldset class="group">
+        <legend>Colors</legend>
+        <div class="color-row">
+          <label class="color">
+            <input id="fg" type="color" value="#1d1d1f" />
+            <span>Foreground</span>
+          </label>
+          <label class="color">
+            <input id="bg" type="color" value="#ffffff" />
+            <span>Background</span>
+          </label>
+          <label class="toggle">
+            <input id="bg-transparent" type="checkbox" />
+            <span>Transparent</span>
+          </label>
+        </div>
+      </fieldset>
 
       <div class="field-grid">
         <div class="field">
@@ -79,135 +85,125 @@
           <select id="format">
             <option value="png" selected>PNG</option>
             <option value="svg">SVG</option>
-            <option value="jpeg" data-styled-only>JPEG</option>
-            <option value="webp" data-styled-only>WebP</option>
+            <option value="jpeg">JPEG</option>
+            <option value="webp">WebP</option>
           </select>
         </div>
       </div>
 
-      <fieldset class="group">
-        <legend>Foreground</legend>
-        <div class="color-row">
-          <label class="color">
-            <input id="fg" type="color" value="#1d1d1f" />
-            <span>Color</span>
-          </label>
-          <label class="toggle styled-only">
-            <input id="fg-gradient" type="checkbox" />
-            <span>Gradient</span>
-          </label>
+      <details class="extras" id="extras">
+        <summary>
+          <span class="extras-title">Extra styles</span>
+          <span class="extras-sub">Dot shapes, logo, gradients</span>
+        </summary>
+        <div class="extras-body">
+          <fieldset class="group">
+            <legend>Shapes</legend>
+            <div class="field-grid">
+              <div class="field">
+                <label for="dot-style">Dots</label>
+                <select id="dot-style">
+                  <option value="square" selected>Square</option>
+                  <option value="rounded">Rounded</option>
+                  <option value="dots">Dots</option>
+                  <option value="classy">Classy</option>
+                  <option value="classy-rounded">Classy rounded</option>
+                  <option value="extra-rounded">Extra rounded</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="corner-sq">Corner squares</label>
+                <select id="corner-sq">
+                  <option value="square" selected>Square</option>
+                  <option value="dot">Dot</option>
+                  <option value="extra-rounded">Extra rounded</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="corner-dot">Corner dots</label>
+                <select id="corner-dot">
+                  <option value="square" selected>Square</option>
+                  <option value="dot">Dot</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="group">
+            <legend>Logo</legend>
+            <div class="logo-row">
+              <label class="file-btn">
+                <input id="logo" type="file" accept="image/*" />
+                <span>Choose image…</span>
+              </label>
+              <button type="button" id="logo-clear" class="ghost-btn" hidden>Remove</button>
+              <span id="logo-name" class="hint subtle" aria-live="polite"></span>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="logo-size">Size <span class="hint" id="logo-size-val">40%</span></label>
+                <input id="logo-size" type="range" min="10" max="60" step="1" value="40" />
+              </div>
+              <div class="field">
+                <label for="logo-margin">Margin <span class="hint" id="logo-margin-val">8</span></label>
+                <input id="logo-margin" type="range" min="0" max="40" step="1" value="8" />
+              </div>
+            </div>
+            <label class="toggle">
+              <input id="logo-hide-dots" type="checkbox" checked />
+              <span>Hide dots behind logo</span>
+            </label>
+          </fieldset>
+          <fieldset class="group">
+            <legend>Gradients</legend>
+            <label class="toggle">
+              <input id="fg-gradient" type="checkbox" />
+              <span>Foreground gradient</span>
+            </label>
+            <div class="gradient-controls" data-for="fg" hidden>
+              <label class="color">
+                <input id="fg-color2" type="color" value="#6e6e73" />
+                <span>End color</span>
+              </label>
+              <div class="field inline">
+                <label for="fg-gtype">Type</label>
+                <select id="fg-gtype">
+                  <option value="linear" selected>Linear</option>
+                  <option value="radial">Radial</option>
+                </select>
+              </div>
+              <div class="field inline">
+                <label for="fg-rotation">Rotation <span class="hint" id="fg-rot-val">0°</span></label>
+                <input id="fg-rotation" type="range" min="0" max="360" step="1" value="0" />
+              </div>
+            </div>
+            <label class="toggle">
+              <input id="bg-gradient" type="checkbox" />
+              <span>Background gradient</span>
+            </label>
+            <div class="gradient-controls" data-for="bg" hidden>
+              <label class="color">
+                <input id="bg-color2" type="color" value="#f5f5f7" />
+                <span>End color</span>
+              </label>
+              <div class="field inline">
+                <label for="bg-gtype">Type</label>
+                <select id="bg-gtype">
+                  <option value="linear" selected>Linear</option>
+                  <option value="radial">Radial</option>
+                </select>
+              </div>
+              <div class="field inline">
+                <label for="bg-rotation">Rotation <span class="hint" id="bg-rot-val">0°</span></label>
+                <input id="bg-rotation" type="range" min="0" max="360" step="1" value="0" />
+              </div>
+            </div>
+          </fieldset>
         </div>
-        <div class="gradient-controls styled-only" data-for="fg" hidden>
-          <label class="color">
-            <input id="fg-color2" type="color" value="#6e6e73" />
-            <span>End color</span>
-          </label>
-          <div class="field inline">
-            <label for="fg-gtype">Type</label>
-            <select id="fg-gtype">
-              <option value="linear" selected>Linear</option>
-              <option value="radial">Radial</option>
-            </select>
-          </div>
-          <div class="field inline">
-            <label for="fg-rotation">Rotation <span class="hint" id="fg-rot-val">0°</span></label>
-            <input id="fg-rotation" type="range" min="0" max="360" step="1" value="0" />
-          </div>
-        </div>
-      </fieldset>
+      </details>
 
-      <fieldset class="group">
-        <legend>Background</legend>
-        <div class="color-row">
-          <label class="color">
-            <input id="bg" type="color" value="#ffffff" />
-            <span>Color</span>
-          </label>
-          <label class="toggle">
-            <input id="bg-transparent" type="checkbox" />
-            <span>Transparent</span>
-          </label>
-          <label class="toggle styled-only">
-            <input id="bg-gradient" type="checkbox" />
-            <span>Gradient</span>
-          </label>
-        </div>
-        <div class="gradient-controls styled-only" data-for="bg" hidden>
-          <label class="color">
-            <input id="bg-color2" type="color" value="#f5f5f7" />
-            <span>End color</span>
-          </label>
-          <div class="field inline">
-            <label for="bg-gtype">Type</label>
-            <select id="bg-gtype">
-              <option value="linear" selected>Linear</option>
-              <option value="radial">Radial</option>
-            </select>
-          </div>
-          <div class="field inline">
-            <label for="bg-rotation">Rotation <span class="hint" id="bg-rot-val">0°</span></label>
-            <input id="bg-rotation" type="range" min="0" max="360" step="1" value="0" />
-          </div>
-        </div>
-      </fieldset>
 
-      <fieldset class="group styled-only">
-        <legend>Shapes</legend>
-        <div class="field-grid">
-          <div class="field">
-            <label for="dot-style">Dots</label>
-            <select id="dot-style">
-              <option value="square" selected>Square</option>
-              <option value="rounded">Rounded</option>
-              <option value="dots">Dots</option>
-              <option value="classy">Classy</option>
-              <option value="classy-rounded">Classy rounded</option>
-              <option value="extra-rounded">Extra rounded</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="corner-sq">Corner squares</label>
-            <select id="corner-sq">
-              <option value="square" selected>Square</option>
-              <option value="dot">Dot</option>
-              <option value="extra-rounded">Extra rounded</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="corner-dot">Corner dots</label>
-            <select id="corner-dot">
-              <option value="square" selected>Square</option>
-              <option value="dot">Dot</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
 
-      <fieldset class="group styled-only">
-        <legend>Logo</legend>
-        <div class="logo-row">
-          <label class="file-btn">
-            <input id="logo" type="file" accept="image/*" />
-            <span>Choose image…</span>
-          </label>
-          <button type="button" id="logo-clear" class="ghost-btn" hidden>Remove</button>
-          <span id="logo-name" class="hint subtle" aria-live="polite"></span>
-        </div>
-        <div class="field-grid">
-          <div class="field">
-            <label for="logo-size">Size <span class="hint" id="logo-size-val">40%</span></label>
-            <input id="logo-size" type="range" min="10" max="60" step="1" value="40" />
-          </div>
-          <div class="field">
-            <label for="logo-margin">Margin <span class="hint" id="logo-margin-val">8</span></label>
-            <input id="logo-margin" type="range" min="0" max="40" step="1" value="8" />
-          </div>
-        </div>
-        <label class="toggle">
-          <input id="logo-hide-dots" type="checkbox" checked />
-          <span>Hide dots behind logo</span>
-        </label>
-      </fieldset>
+
 
       <div class="actions">
         <button type="button" id="reset" class="ghost-btn">Reset defaults</button>
@@ -222,7 +218,7 @@
           <span>Download</span>
         </button>
       </div>
-      <p class="hint-line subtle">Right-click the QR to copy, or use the download button below.</p>
+      <p class="hint-line subtle">Right-click the QR code to copy it.</p>
     </section>
   </main>
 

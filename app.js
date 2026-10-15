@@ -20,6 +20,10 @@
     logoHideDots: $("logo-hide-dots"),
     preview: $("preview"), download: $("download"),
     reset: $("reset"),
+    extras: $("extras"),
+    previewCard: document.querySelector(".preview-card"),
+    previewPane: document.querySelector(".preview-pane"),
+    mobileSlot: $("mobile-preview-slot"),
   };
 
   const defaults = {
@@ -31,13 +35,12 @@
   };
 
   const STORAGE_KEY = "qr-studio-settings-v1";
-  let engine = "styled";
   let logoDataUrl = null;
   let styledQR = null;
 
   function saveState() {
     const s = {
-      url: els.url.value, engine,
+      url: els.url.value, extrasOpen: els.extras.open,
       size: els.size.value, margin: els.margin.value,
       ecl: els.ecl.value, format: els.format.value,
       fg: els.fg.value, fgColor2: els.fgColor2.value,
@@ -81,7 +84,7 @@
     setVal(els.logoSize, s.logoSize); setText(els.logoSizeVal, s.logoSize !== undefined ? s.logoSize + "%" : undefined);
     setVal(els.logoMargin, s.logoMargin); setText(els.logoMarginVal, s.logoMargin);
     setChk(els.logoHideDots, s.logoHideDots);
-    if (s.engine === "simple" || s.engine === "styled") engine = s.engine;
+    if (typeof s.extrasOpen === "boolean") els.extras.open = s.extrasOpen;
     return true;
   }
 
@@ -89,21 +92,6 @@
     try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
   }
 
-  function setEngine(name) {
-    engine = name;
-    document.body.dataset.engineMode = name;
-    document.querySelectorAll("[data-engine]").forEach((b) => {
-      b.setAttribute("aria-selected", String(b.dataset.engine === name));
-    });
-    [...els.format.options].forEach((opt) => {
-      if (opt.hasAttribute("data-styled-only")) {
-        opt.disabled = name !== "styled";
-        if (opt.disabled && opt.selected) els.format.value = "png";
-      }
-    });
-    styledQR = null;
-    render();
-  }
 
   function syncGradientControls(prefix) {
     const toggle = $(`${prefix}-gradient`);
@@ -171,17 +159,6 @@
     return cfg;
   }
 
-  function getSimpleOptions() {
-    return {
-      errorCorrectionLevel: els.ecl.value,
-      margin: Math.max(0, Math.round((+els.margin.value) / 4)),
-      width: +els.size.value,
-      color: {
-        dark: els.fg.value,
-        light: els.bgTransparent.checked ? "#0000" : els.bg.value,
-      },
-    };
-  }
 
   function renderStyled(data) {
     if (typeof QRCodeStyling === "undefined") {
@@ -194,42 +171,15 @@
     styledQR.append(els.preview);
   }
 
-  async function renderSimple(data) {
-    if (typeof QRCode === "undefined") {
-      els.preview.textContent = "Loading qrcode…";
-      return;
-    }
-    const opts = getSimpleOptions();
-    els.preview.replaceChildren();
-    if (els.format.value === "svg") {
-      const svgText = await QRCode.toString(data, { ...opts, type: "svg" });
-      const doc = new DOMParser().parseFromString(svgText, "image/svg+xml");
-      const svgEl = doc.documentElement;
-      if (svgEl && svgEl.nodeName.toLowerCase() === "svg" && !doc.querySelector("parsererror")) {
-        els.preview.appendChild(document.importNode(svgEl, true));
-      } else {
-        els.preview.textContent = "Could not parse SVG output.";
-      }
-    } else {
-      const canvas = document.createElement("canvas");
-      await QRCode.toCanvas(canvas, data, opts);
-      els.preview.appendChild(canvas);
-    }
-  }
 
   let renderTimer;
   function render() {
     clearTimeout(renderTimer);
-    renderTimer = setTimeout(async () => {
+    renderTimer = setTimeout(() => {
       saveState();
       const data = els.url.value || " ";
       try {
-        if (engine === "styled") {
-          renderStyled(data);
-        } else {
-          styledQR = null;
-          await renderSimple(data);
-        }
+        renderStyled(data);
       } catch (err) {
         console.error(err);
         els.preview.textContent = "Could not render: " + (err.message || err);
@@ -242,28 +192,7 @@
     const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
     const name = `qr-${stamp}`;
 
-    if (engine === "styled" && styledQR) {
-      await styledQR.download({ name, extension: fmt });
-      return;
-    }
-
-    const data = els.url.value || " ";
-    const opts = getSimpleOptions();
-    let href, ext;
-    if (fmt === "svg") {
-      const svg = await QRCode.toString(data, { ...opts, type: "svg" });
-      href = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-      ext = "svg";
-    } else {
-      href = await QRCode.toDataURL(data, opts);
-      ext = "png";
-    }
-    const a = document.createElement("a");
-    a.href = href;
-    a.download = `${name}.${ext}`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    if (styledQR) await styledQR.download({ name, extension: fmt });
   }
 
   function resetForm() {
@@ -306,10 +235,6 @@
   }
 
   function bind() {
-    document.querySelectorAll("[data-engine]").forEach((b) => {
-      b.addEventListener("click", () => setEngine(b.dataset.engine));
-    });
-
     bindSlider(els.size, els.sizeVal);
     bindSlider(els.margin, els.marginVal);
     bindSlider(els.fgRotation, els.fgRotVal, "°");
@@ -351,10 +276,20 @@
 
     els.download.addEventListener("click", download);
     els.reset.addEventListener("click", resetForm);
+    els.extras.addEventListener("toggle", saveState);
+  }
+
+  // On phones, show the QR right under the URL field so it is visible without
+  // scrolling; on desktop it stays in its own column beside the settings.
+  function placePreview(mq) {
+    const mobile = mq.matches;
+    const target = mobile ? els.mobileSlot : els.previewPane;
+    if (els.previewCard.parentElement !== target) target.prepend(els.previewCard);
+    els.previewPane.hidden = mobile;
   }
 
   function waitForLibs(cb) {
-    if (typeof QRCodeStyling !== "undefined" && typeof QRCode !== "undefined") {
+    if (typeof QRCodeStyling !== "undefined") {
       cb();
     } else {
       setTimeout(() => waitForLibs(cb), 50);
@@ -363,8 +298,10 @@
 
   function init() {
     bind();
-    const restored = loadState();
-    setEngine(restored ? engine : "styled");
+    loadState();
+    const mq = window.matchMedia("(max-width: 960px)");
+    placePreview(mq);
+    mq.addEventListener("change", placePreview);
     syncGradientControls("fg");
     syncGradientControls("bg");
     waitForLibs(render);

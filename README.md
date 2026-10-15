@@ -14,9 +14,8 @@ A privacy-respecting, fully client-side QR code generator with extensive styling
 
 ## Features
 
-- **Two rendering engines** in one app:
-  - **Styled** — gradients, dot shapes, corner styles, logo embedding, PNG/SVG/JPEG/WebP. Powered by [`qr-code-styling`](https://github.com/kozakdenys/qr-code-styling).
-  - **Simple** — fast, lean, PNG or SVG. Powered by [`qrcode`](https://github.com/soldair/node-qrcode).
+- Simple by default: enter a URL or text and download. **Extra styles** expands for dot shapes, a logo and gradients. Powered by [`qr-code-styling`](https://github.com/kozakdenys/qr-code-styling).
+- On phones the QR code sits right under the URL box, so you see it straight away
 - Foreground & background colors
 - Linear or radial **gradients** (with rotation) on foreground and background
 - Transparent background option
@@ -39,7 +38,7 @@ Two options:
    # then open http://localhost:8000
    ```
 
-The two QR libraries are loaded from jsDelivr. For fully offline use, download `qrcode.min.js` and `qr-code-styling.js` from jsDelivr and replace the CDN URLs in the `<script>` tags of `index.html`.
+The QR library is loaded from jsDelivr. For fully offline use, download `qr-code-styling.js` from jsDelivr and replace the CDN URL in the `<script>` tag of `index.html`.
 
 ## Why?
 

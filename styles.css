@@ -203,15 +203,18 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: calc(100vh - 160px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
-@media (max-width: 960px) {
-  /* Single column: let the page scroll. Leaving the card as a scroll box with
-     overscroll-behavior: contain swallowed wheel and touch scrolling over it. */
-  .controls { max-height: none; overflow: visible; overscroll-behavior: auto; }
+/* Two-column desktop layout only: the settings card scrolls on its own beside
+   the preview. In the single-column phone layout it must stay a normal block,
+   because a scroll box with overscroll-behavior: contain traps touch drags
+   that start on it and the page never scrolls. */
+@media (min-width: 961px) {
+  .controls {
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }
 
 .controls::-webkit-scrollbar { width: 10px; }

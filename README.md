@@ -53,6 +53,8 @@ Most online QR generators are hosted services that track URLs, paywall styling f
 
 The site is served by GitHub Pages from the root of the `main` branch. The `CNAME` file points it at `qr.nwbbc.com`, so every push to `main` updates the live site within a minute or two. Don't delete `CNAME`, or the custom domain will stop working.
 
+When you change `styles.css` or `app.js`, bump the `?v=` number on their links in `index.html` so phones don't keep using a cached copy.
+
 ## Credits
 
 Based on [QR Studio](https://github.com/omariosc/qr-code-generator) by [Omar Choudhry](https://omarchoudhry.co.uk), used under the MIT licence.

@@ -209,7 +209,9 @@ html, body {
 }
 
 @media (max-width: 960px) {
-  .controls { max-height: none; }
+  /* Single column: let the page scroll. Leaving the card as a scroll box with
+     overscroll-behavior: contain swallowed wheel and touch scrolling over it. */
+  .controls { max-height: none; overflow: visible; overscroll-behavior: auto; }
 }
 
 .controls::-webkit-scrollbar { width: 10px; }

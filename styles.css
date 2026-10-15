@@ -450,11 +450,16 @@ fieldset.group legend {
   border-radius: var(--radius-sm);
   background: var(--group-bg);
 }
+.extras {
+  border-color: var(--accent-soft);
+}
 .extras > summary {
   list-style: none;
   cursor: pointer;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
+  background: var(--accent-soft);
+  color: var(--accent);
   align-items: center;
   column-gap: 12px;
   padding: 14px 16px;
@@ -465,25 +470,46 @@ fieldset.group legend {
 .extras > summary::-webkit-details-marker { display: none; }
 .extras > summary::after {
   content: "";
-  grid-column: 2; grid-row: 1 / span 2;
+  grid-column: 3; grid-row: 1 / span 2;
   width: 9px; height: 9px;
-  border-right: 2px solid var(--text-dim);
-  border-bottom: 2px solid var(--text-dim);
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
   transform: translateY(-3px) rotate(45deg);
   transition: transform 0.2s var(--ease);
 }
 .extras[open] > summary::after { transform: translateY(2px) rotate(-135deg); }
-.extras > summary:hover { background: var(--control-hover); }
+.extras > summary:hover { filter: brightness(0.97); }
+.extras[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.extras-icon { grid-column: 1; grid-row: 1 / span 2; }
 .extras > summary:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
-.extras-title { font-size: 14px; font-weight: 600; color: var(--text); }
-.extras-sub { font-size: 12px; color: var(--text-faint); }
+.extras-title { grid-column: 2; font-size: 15px; font-weight: 600; color: var(--accent); }
+.extras-sub { grid-column: 2; font-size: 12px; color: var(--text-dim); }
 .extras-body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 4px 12px 12px;
+  padding: 16px 12px 12px;
 }
+.field-wide { grid-column: 1 / -1; }
 .extras .gradient-controls + .toggle { margin-top: 4px; }
+
+/* Phone layout: give the screen to the content. The header scrolls away and
+   the URL field sticks to the top instead, since it is what people edit. */
+@media (max-width: 960px) {
+  .app-header { position: static; }
+  .url-field {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    margin: -22px -22px 0;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 22px 14px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-radius: var(--radius) var(--radius) 0 0;
+    border-bottom: 1px solid var(--glass-border);
+  }
+}
 
 /* Phone layout: the preview card is moved under the URL field by app.js */
 .mobile-preview-slot:empty { display: none; }

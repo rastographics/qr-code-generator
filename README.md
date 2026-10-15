@@ -1,14 +1,16 @@
 # QR Studio
 
+QR code generator for **Northwest Bible Baptist Church**, live at **[qr.nwbbc.com](https://qr.nwbbc.com)**.
+
 A privacy-respecting, fully client-side QR code generator with extensive styling options. No tracking, no API limits, no signup — open it and create.
 
-[![Live demo](https://img.shields.io/badge/Live%20demo-QR%20Studio-0057B8?style=flat-square)](https://omariosc.github.io/qr-code-generator/)
+[![Live demo](https://img.shields.io/badge/Live-qr.nwbbc.com-0057B8?style=flat-square)](https://qr.nwbbc.com)
 ![Client-side](https://img.shields.io/badge/Client--side-no%20server,%20no%20tracking-009639?style=flat-square)
 ![Build step](https://img.shields.io/badge/Build%20step-none-informational?style=flat-square)
 ![Exports](https://img.shields.io/badge/Exports-PNG%20%7C%20SVG%20%7C%20JPEG%20%7C%20WebP-8a4fff?style=flat-square)
 [![Licence](https://img.shields.io/badge/Licence-MIT-green?style=flat-square)](LICENSE)
 
-**[Live demo →](https://omariosc.github.io/qr-code-generator/)**
+**[Open QR Studio →](https://qr.nwbbc.com)**
 
 ## Features
 
@@ -46,6 +48,14 @@ Most online QR generators are hosted services that track URLs, paywall styling f
 - 100% client-side — your URL, settings, and logo image never leave your browser
 - No analytics, no signup, no rate limits — generate as many as you like
 - Open source (MIT) — fork it, embed it, modify it
+
+## Hosting
+
+The site is served by GitHub Pages from the root of the `main` branch. The `CNAME` file points it at `qr.nwbbc.com`, so every push to `main` updates the live site within a minute or two. Don't delete `CNAME`, or the custom domain will stop working.
+
+## Credits
+
+Based on [QR Studio](https://github.com/omariosc/qr-code-generator) by [Omar Choudhry](https://omarchoudhry.co.uk), used under the MIT licence.
 
 ## License
 

@@ -63,7 +63,9 @@
     const setChk = (el, v) => { if (el && typeof v === "boolean") el.checked = v; };
     const setText = (el, txt) => { if (el && txt !== undefined && txt !== null) el.textContent = txt; };
 
-    setVal(els.url, s.url);
+    // Older versions defaulted to the upstream GitHub link; drop it so returning
+    // visitors get the current default instead of a stale saved value.
+    if (s.url !== "https://github.com/omariosc/qr-code-generator") setVal(els.url, s.url);
     setVal(els.size, s.size); setText(els.sizeVal, s.size);
     setVal(els.margin, s.margin); setText(els.marginVal, s.margin);
     setVal(els.ecl, s.ecl); setVal(els.format, s.format);

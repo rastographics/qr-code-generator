@@ -1,4 +1,4 @@
-# QR Studio
+# NW QR Studio
 
 QR code generator for **Northwest Bible Baptist Church**, live at **[qr.nwbbc.com](https://qr.nwbbc.com)**.
 
@@ -10,7 +10,7 @@ A privacy-respecting, fully client-side QR code generator with extensive styling
 ![Exports](https://img.shields.io/badge/Exports-PNG%20%7C%20SVG%20%7C%20JPEG%20%7C%20WebP-8a4fff?style=flat-square)
 [![Licence](https://img.shields.io/badge/Licence-MIT-green?style=flat-square)](LICENSE)
 
-**[Open QR Studio →](https://qr.nwbbc.com)**
+**[Open NW QR Studio →](https://qr.nwbbc.com)**
 
 ## Features
 

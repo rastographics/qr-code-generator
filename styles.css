@@ -59,6 +59,8 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
+body { overflow-x: clip; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -66,7 +68,6 @@ html, body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -122,6 +123,18 @@ html, body {
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   box-shadow: var(--glass-shadow);
+}
+
+/* Phones: the oversized animated blur and heavy frosted glass are expensive
+   to composite while scrolling and can freeze or hijack touch scrolling, so
+   keep the background inside the screen, stop the animation and use lighter
+   blurs. */
+@media (max-width: 960px), (hover: none) {
+  .bg-mesh { inset: 0; filter: blur(60px) saturate(150%); animation: none; }
+  .glass {
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
 }
 
 /* ── Header ───────────────────────────────────────────────── */
